@@ -19,37 +19,41 @@ def validate_ip(ip):
 
         return False # retorna false se o ip nao for uma string
 
+def getValidIPInput():
+
+    ip = input("Digite o endereco IP a ser escaneado: ")
+
+    while (not validate_ip(ip)):
+
+        ip = input("Endereco digitado nao eh valido! Digite o endereco IP valido a ser escaneado: ")    
+
+    return ip
+
+#print("ip = ", ip)
+
+def NMAPcsv(ip):
+
+    nnscan = nmap.PortScanner()
+
+    nnscan.scan(ip)
+
+    scanresult = nnscan.csv()
+
+    #print(scanresult)
+
+    os.makedirs(os.getcwd() + "/Results/",exist_ok=True)
 
 
-nnscan = nmap.PortScanner()
+    with open(("Results/" + ip + str(datetime.datetime.now()) + ".csv"), 'w', newline='') as file:
 
-ip = input("Digite o endereco IP a ser escaneado: ")
+        writer = csv.writer(file)
 
-while (not validate_ip(ip)):
+        rows2 = scanresult.splitlines()
+        rows = [r.splitlines() for r in rows2]
 
-    ip = input("Endereco digitado nao eh valido! Digite o endereco IP valido a ser escaneado: ")    
+        #print(rows)
 
+        for row in rows:
+            writer.writerow(row)
 
-print("ip = ", ip)
-
-
-nnscan.scan(ip)
-
-scanresult = nnscan.csv()
-
-print(scanresult)
-
-os.makedirs(os.getcwd() + "/Results/",exist_ok=True)
-
-
-with open(("Results/" + ip + str(datetime.datetime.now()) + ".csv"), 'w', newline='') as file:
-
-    writer = csv.writer(file)
-
-    rows2 = scanresult.splitlines()
-    rows = [r.splitlines() for r in rows2]
-
-    #print(rows)
-
-    for row in rows:
-        writer.writerow(row)
+    return scanresult
